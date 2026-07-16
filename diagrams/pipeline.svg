@@ -1,0 +1,58 @@
+<svg viewBox="0 0 950 380" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <rect width="950" height="380" fill="#ffffff"/>
+  <text x="475" y="32" text-anchor="middle" font-size="20" font-weight="700" fill="#1F3864">CI/CD Pipeline — Code to Running Pod</text>
+
+  <!-- Step boxes -->
+  <g font-size="12">
+    <rect x="20" y="70" width="140" height="70" rx="8" fill="#DCE6F5" stroke="#1F3864" stroke-width="1.5"/>
+    <text x="90" y="98" text-anchor="middle" font-weight="700" fill="#1F3864">Developer</text>
+    <text x="90" y="116" text-anchor="middle" fill="#1F3864">git push to main</text>
+
+    <rect x="200" y="70" width="150" height="70" rx="8" fill="#E9F2E9" stroke="#3C7A3C" stroke-width="1.5"/>
+    <text x="275" y="92" text-anchor="middle" font-weight="700" fill="#2E5E2E">Job 1: test</text>
+    <text x="275" y="110" text-anchor="middle" fill="#2E5E2E">pytest on</text>
+    <text x="275" y="124" text-anchor="middle" fill="#2E5E2E">Flask app</text>
+
+    <rect x="390" y="70" width="170" height="70" rx="8" fill="#E9F2E9" stroke="#3C7A3C" stroke-width="1.5"/>
+    <text x="475" y="90" text-anchor="middle" font-weight="700" fill="#2E5E2E">Job 2: build-and-push</text>
+    <text x="475" y="108" text-anchor="middle" fill="#2E5E2E">Docker build, tag with</text>
+    <text x="475" y="122" text-anchor="middle" fill="#2E5E2E">commit SHA, push to ECR</text>
+
+    <rect x="600" y="70" width="160" height="70" rx="8" fill="#E9F2E9" stroke="#3C7A3C" stroke-width="1.5"/>
+    <text x="680" y="90" text-anchor="middle" font-weight="700" fill="#2E5E2E">Job 3: deploy</text>
+    <text x="680" y="108" text-anchor="middle" fill="#2E5E2E">helm upgrade --install</text>
+    <text x="680" y="122" text-anchor="middle" fill="#2E5E2E">onto EKS cluster</text>
+
+    <rect x="800" y="70" width="130" height="70" rx="8" fill="#DCE6F5" stroke="#1F3864" stroke-width="1.5"/>
+    <text x="865" y="98" text-anchor="middle" font-weight="700" fill="#1F3864">Running Pods</text>
+    <text x="865" y="116" text-anchor="middle" fill="#1F3864">on EKS</text>
+  </g>
+
+  <!-- Arrows -->
+  <g stroke="#1F3864" stroke-width="2" fill="none" marker-end="url(#arrow)">
+    <line x1="160" y1="105" x2="198" y2="105"/>
+    <line x1="350" y1="105" x2="388" y2="105"/>
+    <line x1="560" y1="105" x2="598" y2="105"/>
+    <line x1="760" y1="105" x2="798" y2="105"/>
+  </g>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#1F3864"/>
+    </marker>
+  </defs>
+
+  <!-- Rollback path -->
+  <path d="M680 140 C 680 220, 475 220, 475 140" stroke="#B23A3A" stroke-width="2" fill="none" stroke-dasharray="5,4" marker-end="url(#arrowred)"/>
+  <defs>
+    <marker id="arrowred" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#B23A3A"/>
+    </marker>
+  </defs>
+  <text x="577" y="240" text-anchor="middle" font-size="12" fill="#B23A3A" font-weight="700">If deploy fails health check → helm rollback</text>
+
+  <!-- Legend / bottom row -->
+  <g font-size="12" fill="#333333">
+    <text x="475" y="300" text-anchor="middle">Every push to main runs all 3 jobs automatically — no manual deploy step.</text>
+    <text x="475" y="322" text-anchor="middle">Images are tagged with the Git commit SHA, never ":latest" — every deploy is traceable to exact code.</text>
+  </g>
+</svg>

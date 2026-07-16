@@ -1,0 +1,6 @@
+apiVersion: v2
+name: cicd-demo
+description: The Flask demo app deployed automatically by the GitHub Actions pipeline
+type: application
+version: 0.1.0
+appVersion: "1.0"
