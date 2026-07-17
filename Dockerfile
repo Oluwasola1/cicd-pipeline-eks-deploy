@@ -1,18 +1,17 @@
-# --- Build stage: install dependencies into a virtualenv ---
-FROM python:3.12-slim AS build
-
-WORKDIR /app
-COPY app/requirements.txt .
-RUN pip install --no-cache-dir --target=/install -r requirements.txt
-
-# --- Final stage: small runtime image, no build tools ---
+# Single-stage build: Flask/gunicorn are pure-Python, no compilation needed,
+# so a multi-stage build adds complexity without benefit here — and the
+# previous `pip install --target=...` approach silently dropped console
+# script entry points (like the `gunicorn` executable), causing:
+#   exec: "gunicorn": executable file not found in $PATH
 FROM python:3.12-slim
 
 # Run as a non-root user — a real security review item, not just a formality
 RUN useradd --create-home --shell /bin/bash appuser
 WORKDIR /app
 
-COPY --from=build /install /usr/local/lib/python3.12/site-packages
+COPY app/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
 COPY app/ .
 
 USER appuser
