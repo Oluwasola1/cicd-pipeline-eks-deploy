@@ -112,15 +112,31 @@ kubectl get pods
 kubectl get svc cicd-demo
 ```
 
+![kubectl showing pod running](screenshots/03-kubectl-pods-running.png)
+
 Open the `EXTERNAL-IP` from the service in a browser — you should see the
 JSON response from the Flask app, including the Git commit SHA baked into
 the image tag.
 
-### 6. Make a change and watch it deploy automatically
+### 6. Live demo — make a change and watch it deploy automatically
 
-Edit the message in `app/app.py`, commit, and push again. Watch the Actions
-tab — the whole pipeline reruns and your change appears live within a few
-minutes, with zero manual deploy commands.
+Edit the message in `app/app.py`, commit, and push:
+
+```bash
+git add app/app.py
+git commit -m "Update welcome message to demo automatic redeploy"
+git push
+```
+
+Watch the **Actions** tab — all three jobs run automatically with zero
+manual deploy commands:
+
+![Pipeline running in GitHub Actions](screenshots/01-pipeline-running.png)
+
+Refresh the app's URL in your browser — the change is live within a few
+minutes:
+
+![App showing the updated message live](screenshots/02-app-updated-live.png)
 
 ### 7. Cleanup
 
@@ -132,6 +148,30 @@ terraform destroy
 
 Remember Project 1's cluster is separate — destroy it too from that repo
 when you're done working, to stop all charges.
+
+## Real issues encountered and fixed
+
+Two genuine bugs came up while building this, both worth knowing about if
+you deploy Python apps on EKS:
+
+**1. `gunicorn: executable file not found in $PATH`**
+The original Dockerfile used a multi-stage build with
+`pip install --target=/install`. This installs the package files correctly,
+but silently drops console-script entry points (like the `gunicorn`
+executable) — so the final image built and ran, but the container crashed
+immediately on start. Fixed by switching to a single-stage build with a
+plain `pip install -r requirements.txt`, since Flask/gunicorn need no
+compilation step that would justify the multi-stage split anyway.
+
+**2. Pods stuck `Pending` / `Too many pods` on `t3.micro` nodes**
+AWS limits the number of pods a node can run based on how many network
+interfaces and IP addresses that instance type supports — `t3.micro` only
+supports a handful of pods per node. With Kubernetes' own system pods
+(CoreDNS, kube-proxy, the VPC CNI) already using part of that budget, there
+wasn't room left for 2 replicas across 2 tiny nodes. Fixed by reducing
+`replicaCount` to 1 in `values.yaml`. (A production fix for this same issue
+would be enabling [VPC CNI prefix delegation](https://docs.aws.amazon.com/eks/latest/userguide/cni-increase-ip-addresses.html)
+to raise the pod-per-node ceiling without changing instance size.)
 
 ## What this project demonstrates
 
