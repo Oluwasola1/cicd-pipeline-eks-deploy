@@ -1,4 +1,4 @@
-replicaCount: 2
+replicaCount: 1
 
 image:
   # These two are overridden at deploy time by the GitHub Actions workflow
