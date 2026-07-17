@@ -74,7 +74,7 @@ terraform init
 terraform apply
 ```
 
-Note the `repository_url` output — you won't need to paste it anywhere
+Note the `repository_url` output - you won't need to paste it anywhere
 manually, but it confirms the repo now exists in AWS.
 
 ### 2. Create an IAM user for GitHub Actions (or reuse your existing one)
